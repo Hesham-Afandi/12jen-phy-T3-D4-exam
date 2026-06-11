@@ -3,537 +3,500 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>امتحان تطبيقات المجال المغناطيسي - 12 عام فيزياء</title>
+    <title>⚙️ فيزياء الصف الثاني عشر - تطبيقات المجال المغناطيسي</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Cairo', sans-serif; }
-        .formula { font-family: 'Times New Roman', serif; direction: ltr; display: inline-block; }
-        .option-correct { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; transform: scale(1.02); }
-        .option-wrong { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; animation: shake 0.5s; }
-        .option-selected { border: 3px solid #6366f1; background: #eef2ff; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-        .fade-in { animation: fadeIn 0.5s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .progress-fill { transition: width 0.5s ease; }
-        .timer-warning { animation: pulse 1s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .correct { background-color: #dcfce7 !important; border-color: #16a34a !important; }
+        .incorrect { background-color: #fee2e2 !important; border-color: #dc2626 !important; }
+        .formula { font-family: 'Times New Roman', serif; font-style: italic; direction: ltr; display: inline-block; }
+        .timer-warning { color: #dc2626 !important; animation: pulse 1s infinite; }
+        @keyframes pulse { 50% { opacity: 0.7; } }
+        @media print { .no-print { display: none !important; } }
+        .success-badge { 
+            display: inline-block; 
+            padding: 4px 12px; 
+            border-radius: 20px; 
+            font-weight: bold;
+            font-size: 0.875rem;
+        }
+        .grade-excellent { background: #dcfce7; color: #166534; }
+        .grade-good { background: #fef3c7; color: #92400e; }
+        .grade-pass { background: #dbeafe; color: #1e40af; }
+        .grade-fail { background: #fee2e2; color: #991b1b; }
     </style>
 </head>
-<body class="bg-gradient-to-br from-teal-50 via-cyan-50 to-sky-50 min-h-screen p-4 md:p-8">
-    <div class="max-w-5xl mx-auto">
-        <!-- Header -->
-        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden mb-6 fade-in">
-            <div class="bg-gradient-to-r from-teal-600 via-cyan-600 to-sky-600 p-8 text-white text-center">
-                <div class="text-6xl mb-3">⚙️</div>
-                <h1 class="text-3xl md:text-4xl font-bold mb-2">امتحان تطبيقات المجال المغناطيسي</h1>
-                <h2 class="text-xl md:text-2xl font-semibold opacity-90">الصف الثاني عشر - عام - فيزياء</h2>
-                <h3 class="text-lg opacity-80 mt-2">الوحدة الثانية: المغناطيسية - الدرس الرابع</h3>
-            </div>
-            <div class="p-6 bg-gray-50">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                    <div class="bg-white rounded-xl p-4 shadow">
-                        <div class="text-3xl mb-1">📝</div>
-                        <div class="text-sm text-gray-500">عدد الأسئلة</div>
-                        <div class="text-2xl font-bold text-teal-600" id="totalQ">15</div>
-                    </div>
-                    <div class="bg-white rounded-xl p-4 shadow">
-                        <div class="text-3xl mb-1">⭐</div>
-                        <div class="text-sm text-gray-500">الدرجة الكلية</div>
-                        <div class="text-2xl font-bold text-cyan-600">30</div>
-                    </div>
-                    <div class="bg-white rounded-xl p-4 shadow">
-                        <div class="text-3xl mb-1">⏱️</div>
-                        <div class="text-sm text-gray-500">الوقت المتبقي</div>
-                        <div class="text-2xl font-bold text-sky-600" id="timer">30:00</div>
-                    </div>
-                    <div class="bg-white rounded-xl p-4 shadow">
-                        <div class="text-3xl mb-1">📊</div>
-                        <div class="text-sm text-gray-500">التقدم</div>
-                        <div class="text-2xl font-bold text-green-600" id="progress">0/15</div>
-                    </div>
-                </div>
-                <!-- Progress Bar -->
-                <div class="mt-4 bg-gray-200 rounded-full h-3 overflow-hidden">
-                    <div id="progressBar" class="progress-fill bg-gradient-to-r from-teal-500 to-cyan-500 h-full rounded-full" style="width: 0%"></div>
-                </div>
-            </div>
-        </div>
+<body class="bg-gray-50 text-gray-800 p-4 md:p-8 min-h-screen">
 
-        <!-- Student Info -->
-        <div class="bg-white rounded-2xl shadow-lg p-6 mb-6 fade-in">
-            <h3 class="font-bold text-lg mb-4 text-gray-800">📋 بيانات الطالب</h3>
-            <div class="grid md:grid-cols-3 gap-4">
-                <input type="text" id="studentName" placeholder="الاسم الثلاثي" class="border-2 border-gray-300 rounded-lg px-4 py-3 focus:border-teal-500 focus:outline-none">
-                <input type="text" id="studentId" placeholder="رقم الجلوس" class="border-2 border-gray-300 rounded-lg px-4 py-3 focus:border-teal-500 focus:outline-none">
-                <input type="text" id="studentClass" placeholder="الشعبة / الفصل" class="border-2 border-gray-300 rounded-lg px-4 py-3 focus:border-teal-500 focus:outline-none">
-            </div>
-        </div>
-
-        <!-- Questions Container -->
-        <div id="questionsContainer" class="space-y-6"></div>
-
-        <!-- Submit Button -->
-        <div class="mt-8 text-center">
-            <button onclick="submitExam()" id="submitBtn" class="bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white text-xl font-bold px-12 py-4 rounded-2xl shadow-2xl transform hover:scale-105 transition">
-                📝 تسليم الامتحان
-            </button>
-            <p class="text-sm text-gray-500 mt-3">تأكد من إجابة جميع الأسئلة قبل التسليم</p>
-        </div>
-
-        <!-- Results Section (Hidden Initially) -->
-        <div id="resultsSection" class="hidden mt-8 bg-white rounded-3xl shadow-2xl p-8 fade-in">
-            <div id="resultsContent"></div>
-        </div>
-
-        <!-- Formulas Reference -->
-        <div class="mt-8 bg-gradient-to-br from-teal-100 to-cyan-100 rounded-2xl p-6 border-2 border-teal-300">
-            <h3 class="font-bold text-teal-900 mb-4 flex items-center gap-2">
-                <span class="text-2xl">📐</span> الصيغ والمفاهيم المساعدة
-            </h3>
-            <div class="grid md:grid-cols-2 gap-3 text-sm">
-                <div class="formula bg-white p-3 rounded-lg shadow">F = qvB sin(θ)</div>
-                <div class="formula bg-white p-3 rounded-lg shadow">F = BIL sin(θ)</div>
-                <div class="formula bg-white p-3 rounded-lg shadow">τ = NIAB sin(θ)</div>
-                <div class="formula bg-white p-3 rounded-lg shadow">μ₀ = 4π × 10⁻⁷ T·m/A</div>
-                <div class="formula bg-white p-3 rounded-lg shadow">B = μ₀nI (الملف اللولبي)</div>
-                <div class="formula bg-white p-3 rounded-lg shadow">B = μ₀I / (2πr) (سلك مستقيم)</div>
-            </div>
+    <!-- Timer -->
+    <div id="timer-container" class="max-w-4xl mx-auto mb-4 text-center no-print">
+        <div class="bg-white p-4 rounded-xl shadow-md inline-block border-2 border-teal-100">
+            <span class="text-gray-600 ml-2">⏱️ الوقت المتبقي:</span>
+            <span id="timer" class="text-2xl font-bold text-teal-600 font-mono">60:00</span>
         </div>
     </div>
 
-    <script>
-        // ==================== QUESTIONS DATABASE ====================
-        const questions = [
-            {
-                id: 1,
-                type: 'mcq',
-                points: 2,
-                question: 'ما هي قوة لورنتز (Lorentz Force)؟',
-                options: [
-                    'القوة المؤثرة على شحنة متحركة في مجال مغناطيسي',
-                    'القوة بين مغناطيسين',
-                    'القوة الكهربية بين الشحنات',
-                    'قوة الجاذبية الأرضية'
-                ],
-                correct: 0,
-                explanation: 'قوة لورنتز هي القوة المغناطيسية المؤثرة على شحنة متحركة في مجال مغناطيسي، وتُحسب من العلاقة: F = qvB sin(θ)'
-            },
-            {
-                id: 2,
-                type: 'mcq',
-                points: 2,
-                question: 'متى تكون القوة المغناطيسية على شحنة متحركة في أقصى قيمة لها؟',
-                options: [
-                    'عندما تتحرك الشحنة موازية للمجال (θ = 0°)',
-                    'عندما تتحرك الشحنة عمودية على المجال (θ = 90°)',
-                    'عندما تكون الشحنة ساكنة',
-                    'عندما تكون الشحنة سالبة'
-                ],
-                correct: 1,
-                explanation: 'القوة F = qvB sin(θ) تكون قصوى عندما θ = 90° لأن sin(90°) = 1. وعندما θ = 0° تكون القوة صفراً لأن sin(0°) = 0.'
-            },
-            {
-                id: 3,
-                type: 'mcq',
-                points: 2,
-                question: 'ما هي القوة المؤثرة على سلك مستقيم طوله L يحمل تيار I في مجال مغناطيسي B بزاوية θ؟',
-                options: [
-                    'F = BIL sin(θ)',
-                    'F = qvB sin(θ)',
-                    'F = NIAB sin(θ)',
-                    'F = μ₀nI'
-                ],
-                correct: 0,
-                explanation: 'القوة على سلك يحمل تياراً في مجال مغناطيسي تُحسب من: F = BIL sin(θ) حيث B المجال، I التيار، L طول السلك، θ الزاوية.'
-            },
-            {
-                id: 4,
-                type: 'mcq',
-                points: 2,
-                question: 'في قاعدة اليد اليمنى للقوة (فلمنج)، ماذا يمثل الإبهام؟',
-                options: [
-                    'اتجاه المجال المغناطيسي (B)',
-                    'اتجاه التيار الكهربي (I)',
-                    'اتجاه القوة المغناطيسية (F)',
-                    'اتجاه حركة الشحنة'
-                ],
-                correct: 2,
-                explanation: 'في قاعدة فلمنج: السبابة = اتجاه المجال (B)، الوسطى = اتجاه التيار (I)، الإبهام = اتجاه القوة (F).'
-            },
-            {
-                id: 5,
-                type: 'mcq',
-                points: 2,
-                question: 'ما هو المحول الرئيسي للطاقة في المحرك الكهربي؟',
-                options: [
-                    'من طاقة كهربية إلى طاقة حرارية',
-                    'من طاقة كهربية إلى طاقة ميكانيكية (حركة)',
-                    'من طاقة ميكانيكية إلى طاقة كهربية',
-                    'من طاقة ضوئية إلى طاقة كهربية'
-                ],
-                correct: 1,
-                explanation: 'المحرك الكهربي يحول الطاقة الكهربية إلى طاقة ميكانيكية (حركة دورانية) باستخدام تأثير المجال المغناطيسي على ملف يحمل تياراً.'
-            },
-            {
-                id: 6,
-                type: 'mcq',
-                points: 2,
-                question: 'ما وظيفة المبدل (Commutator) في المحرك الكهربي؟',
-                options: [
-                    'يولد المجال المغناطيسي',
-                    'يعكس اتجاه التيار كل نصف دورة لضمان استمرار الدوران',
-                    'يقيس شدة التيار',
-                    'يخزن الطاقة الكهربية'
-                ],
-                correct: 1,
-                explanation: 'المبدل يعكس اتجاه التيار المار في الملف كل نصف دورة، مما يضمن بقاء عزم الدوران في نفس الاتجاه ويستمر المحرك في الدوران.'
-            },
-            {
-                id: 7,
-                type: 'mcq',
-                points: 2,
-                question: 'ما هي مكونات المحرك الكهربي الأساسية؟',
-                options: [
-                    'الملف، المغناطيس، المبدل، الفرشات',
-                    'البطارية، المصباح، المفتاح',
-                    'المقاومة، المكثف، الملف',
-                    'الداينمو، المحول، المنصهر'
-                ],
-                correct: 0,
-                explanation: 'المحرك الكهربي يتكون من: الملف (Armature) الذي يدور، المغناطيس الذي يوفر مجالاً ثابتاً، المبدل (Commutator) الذي يعكس التيار، والفرشات (Brushes) التي تنقل التيار.'
-            },
-            {
-                id: 8,
-                type: 'mcq',
-                points: 2,
-                question: 'عزم الازدواج (Torque) على ملف يحمل تياراً في مجال مغناطيسي يُحسب من العلاقة:',
-                options: [
-                    'τ = NIAB sin(θ)',
-                    'τ = BIL sin(θ)',
-                    'τ = qvB sin(θ)',
-                    'τ = μ₀nI'
-                ],
-                correct: 0,
-                explanation: 'عزم الازدواج على ملف في مجال مغناطيسي: τ = NIAB sin(θ) حيث N عدد اللفات، I التيار، A مساحة الملف، B المجال، θ الزاوية.'
-            },
-            {
-                id: 9,
-                type: 'mcq',
-                points: 2,
-                question: 'أي من التالي ليس من تطبيقات المجال المغناطيسي؟',
-                options: [
-                    'المحركات الكهربية',
-                    'أجهزة التصوير بالرنين المغناطيسي (MRI)',
-                    'المصابيح المتوهجة',
-                    'قطارات الرفع المغناطيسي (Maglev)'
-                ],
-                correct: 2,
-                explanation: 'المصابيح المتوهجة تعتمد على تحويل الطاقة الكهربية إلى ضوء وحرارة عبر مقاومة سلك التنجستن، ولا تعتمد على المجال المغناطيسي.'
-            },
-            {
-                id: 10,
-                type: 'mcq',
-                points: 2,
-                question: 'ما هو مبدأ عمل مسرّع الجسيمات الكبير (LHC)؟',
-                options: [
-                    'استخدام الجاذبية لتسريع الجسيمات',
-                    'استخدام المجالات الكهربية والمغناطيسية لتسريع وتوجيه الجسيمات المشحونة',
-                    'استخدام الحرارة لتسريع الجسيمات',
-                    'استخدام الضوء لتسريع الجسيمات'
-                ],
-                correct: 1,
-                explanation: 'مسرّع LHC يستخدم مجالات كهربية لتسريع الجسيمات المشحونة، ومجالات مغناطيسية قوية لتوجيهها في مسار دائري داخل نفق طوله 27 كم.'
-            },
-            {
-                id: 11,
-                type: 'calculation',
-                points: 2,
-                question: 'شحنة مقدارها 4 × 10⁻⁶ C تتحرك بسرعة 2 × 10⁵ m/s في مجال مغناطيسي 0.3 T بزاوية 90°. احسب القوة المغناطيسية:',
-                answer: '0.24',
-                unit: 'N',
-                explanation: 'F = qvB sin(θ) = (4 × 10⁻⁶) × (2 × 10⁵) × 0.3 × sin(90°) = 4 × 2 × 0.3 × 10⁻¹ = 2.4 × 10⁻¹ = 0.24 N'
-            },
-            {
-                id: 12,
-                type: 'calculation',
-                points: 2,
-                question: 'سلك طوله 0.5 m يحمل تيار 4 A موضوع في مجال مغناطيسي 0.2 T بزاوية 90°. احسب القوة المؤثرة عليه:',
-                answer: '0.4',
-                unit: 'N',
-                explanation: 'F = BIL sin(θ) = 0.2 × 4 × 0.5 × sin(90°) = 0.4 N'
-            },
-            {
-                id: 13,
-                type: 'calculation',
-                points: 2,
-                question: 'ملف عدد لفاته 100 لفة، مساحته 0.02 m²، يحمل تيار 3 A، موضوع في مجال مغناطيسي 0.5 T بزاوية 90°. احسب عزم الازدواج:',
-                answer: '3',
-                unit: 'N·m',
-                explanation: 'τ = NIAB sin(θ) = 100 × 3 × 0.02 × 0.5 × sin(90°) = 100 × 3 × 0.01 = 3 N·m'
-            },
-            {
-                id: 14,
-                type: 'mcq',
-                points: 2,
-                question: 'عندما تتحرك شحنة موازية لاتجاه المجال المغناطيسي (θ = 0°)، تكون القوة المغناطيسية:',
-                options: [
-                    'في أقصى قيمة لها',
-                    'تساوي صفراً',
-                    'تساوي نصف القيمة القصوى',
-                    'سالبة'
-                ],
-                correct: 1,
-                explanation: 'عندما θ = 0°، فإن sin(0°) = 0، وبالتالي F = qvB × 0 = 0. لا توجد قوة مغناطيسية على الشحنة المتحركة موازية للمجال.'
-            },
-            {
-                id: 15,
-                type: 'mcq',
-                points: 2,
-                question: 'ما الذي يميز قطارات Maglev (الرفع المغناطيسي)؟',
-                options: [
-                    'تسير على قضبان حديدية عادية',
-                    'تطفو فوق المسار باستخدام القوى المغناطيسية مما يلغي الاحتكاك',
-                    'تستخدم محركات ديزل',
-                    'تسير بسرعة بطيئة جداً'
-                ],
-                correct: 1,
-                explanation: 'قطارات Maglev تستخدم المجالات المغناطيسية القوية للطفو فوق المسار، مما يلغي الاحتكاك الميكانيكي ويسمح بسرعات عالية جداً تصل إلى 600 كم/ساعة.'
-            }
-        ];
+    <!-- Controls -->
+    <div class="max-w-4xl mx-auto mb-6 flex flex-wrap gap-3 justify-center no-print">
+        <button onclick="toggleAnswers()" class="bg-teal-600 hover:bg-teal-700 text-white px-5 py-2 rounded-lg font-medium transition shadow cursor-pointer">
+            👁️ إظهار / إخفاء الإجابات النموذجية
+        </button>
+        <button onclick="window.print()" class="bg-gray-800 hover:bg-gray-900 text-white px-5 py-2 rounded-lg font-medium transition shadow cursor-pointer">
+            🖨️ طباعة / حفظ كـ PDF
+        </button>
+    </div>
 
-        // ==================== STATE ====================
-        let userAnswers = {};
-        let timeLeft = 30 * 60;
+    <!-- Header -->
+    <header class="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-md mb-8 border-r-4 border-teal-600">
+        <div class="text-center">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">⚙️ فيزياء الصف الثاني عشر عام</h1>
+            <h2 class="text-lg text-teal-600 font-semibold">الوحدة الثانية: تطبيقات المجال المغناطيسي</h2>
+            <p class="text-sm text-gray-600 mt-2">Lorentz Force, Magnetic Force on Wires, Torque & Electric Motors</p>
+        </div>
+        <div class="mt-4 flex flex-wrap justify-center gap-4 text-sm text-gray-600">
+            <span>📅 التاريخ: <input type="text" class="border-b border-gray-400 bg-transparent w-28 text-center"></span>
+            <span>👤 الاسم: <input type="text" id="studentName" class="border-b border-gray-400 bg-transparent w-32 text-center" placeholder="أدخل الاسم"></span>
+            <span>🏫 الشعبة: <input type="text" id="studentClass" class="border-b border-gray-400 bg-transparent w-28 text-center" placeholder="الفصل"></span>
+            <span>⏱️ المدة: 60 دقيقة</span>
+            <span>📊 المجموع: 100 درجة</span>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto space-y-8">
+
+        <!-- Section 1: Lorentz Force -->
+        <section class="bg-white p-6 rounded-xl shadow-lg">
+            <h2 class="text-xl font-bold mb-4 text-teal-700">🔹 الجزء الأول: قوة لورنتز والقوة على شحنة متحركة</h2>
+            <ol id="section1-list" class="space-y-4 text-sm">
+                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-1">
+                    <strong>1.</strong> تُعرَّف قوة لورنتز (Lorentz Force) بأنها:<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q1" value="a" class="ml-2"> أ) القوة الكهربية بين الشحنات الساكنة</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q1" value="b" class="ml-2"> ب) القوة المغناطيسية المؤثرة على شحنة متحركة في مجال مغناطيسي</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q1" value="c" class="ml-2"> ج) قوة الجاذبية بين كتلتين</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q1" value="d" class="ml-2"> د) القوة بين مغناطيسين فقط</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) القوة المغناطيسية على شحنة متحركة في مجال مغناطيسي، F = qvB sin(θ)</div>
+                </li>
+                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-2">
+                    <strong>2.</strong> العلاقة الرياضية لحساب القوة المغناطيسية على شحنة متحركة هي:<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q2" value="a" class="ml-2"> أ) F = qvB cos(θ)</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q2" value="b" class="ml-2"> ب) F = qvB sin(θ)</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q2" value="c" class="ml-2"> ج) F = qv/B</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q2" value="d" class="ml-2"> د) F = qB/v</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) F = qvB sin(θ)</div>
+                </li>
+                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-3">
+                    <strong>3.</strong> متى تكون القوة المغناطيسية على شحنة متحركة في أقصى قيمة لها؟<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q3" value="a" class="ml-2"> أ) عندما تتحرك الشحنة موازية للمجال (θ = 0°)</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q3" value="b" class="ml-2"> ب) عندما تكون الشحنة ساكنة</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q3" value="c" class="ml-2"> ج) عندما تتحرك الشحنة عمودية على المجال (θ = 90°)</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q3" value="d" class="ml-2"> د) عندما تكون الشحنة سالبة</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ج) لأن sin(90°) = 1، فتكون القوة في أقصى قيمة</div>
+                </li>
+                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-4">
+                    <strong>4.</strong> عندما تتحرك شحنة موازية لاتجاه المجال المغناطيسي (θ = 0°)، تكون القوة المغناطيسية:<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q4" value="a" class="ml-2"> أ) في أقصى قيمة لها</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q4" value="b" class="ml-2"> ب) تساوي صفراً</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q4" value="c" class="ml-2"> ج) تساوي نصف القيمة القصوى</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q4" value="d" class="ml-2"> د) سالبة</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) لأن sin(0°) = 0، فلا توجد قوة مغناطيسية</div>
+                </li>
+            </ol>
+        </section>
+
+        <!-- Section 2: Force on Current-Carrying Wire -->
+        <section class="bg-white p-6 rounded-xl shadow-lg">
+            <h2 class="text-xl font-bold mb-4 text-teal-700">🔹 الجزء الثاني: القوة على سلك يحمل تياراً</h2>
+            <ol id="section2-list" class="space-y-4 text-sm">
+                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-5">
+                    <strong>5.</strong> العلاقة الرياضية لحساب القوة على سلك مستقيم طوله L يحمل تيار I في مجال مغناطيسي B هي:<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q5" value="a" class="ml-2"> أ) F = BIL sin(θ)</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q5" value="b" class="ml-2"> ب) F = qvB sin(θ)</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q5" value="c" class="ml-2"> ج) F = NIAB sin(θ)</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q5" value="d" class="ml-2"> د) F = μ₀nI</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: أ) F = BIL sin(θ)</div>
+                </li>
+                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-6">
+                    <strong>6.</strong> سلك طوله 0.5 m يحمل تيار 4 A موضوع في مجال مغناطيسي 0.2 T بزاوية 90°. القوة المؤثرة عليه تساوي:<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q6" value="a" class="ml-2"> أ) 0.4 N</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q6" value="b" class="ml-2"> ب) 4 N</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q6" value="c" class="ml-2"> ج) 0.04 N</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q6" value="d" class="ml-2"> د) 40 N</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: أ) F = 0.2 × 4 × 0.5 × sin(90°) = 0.4 N</div>
+                </li>
+                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-7">
+                    <strong>7.</strong> شحنة مقدارها 4 × 10⁻⁶ C تتحرك بسرعة 2 × 10⁵ m/s في مجال مغناطيسي 0.3 T بزاوية 90°. القوة المغناطيسية تساوي:<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q7" value="a" class="ml-2"> أ) 0.24 N</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q7" value="b" class="ml-2"> ب) 2.4 N</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q7" value="c" class="ml-2"> ج) 0.024 N</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q7" value="d" class="ml-2"> د) 24 N</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: أ) F = (4×10⁻⁶)(2×10⁵)(0.3) = 0.24 N</div>
+                </li>
+                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-8">
+                    <strong>8.</strong> إذا تضاعف التيار المار في سلك موضوع في مجال مغناطيسي ثابت (مع ثبات باقي العوامل)، فإن القوة المغناطيسية:<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q8" value="a" class="ml-2"> أ) تبقى ثابتة</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q8" value="b" class="ml-2"> ب) تنقص إلى النصف</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q8" value="c" class="ml-2"> ج) تتضاعف</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q8" value="d" class="ml-2"> د) تتضاعف أربع مرات</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ج) لأن القوة تتناسب طردياً مع التيار (F = BIL sin θ)</div>
+                </li>
+            </ol>
+        </section>
+
+        <!-- Section 3: Torque & Right-Hand Rule -->
+        <section class="bg-white p-6 rounded-xl shadow-lg">
+            <h2 class="text-xl font-bold mb-4 text-teal-700">🔹 الجزء الثالث: عزم الازدواج وقاعدة اليد اليمنى</h2>
+            <ol id="section3-list" class="space-y-4 text-sm">
+                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-9">
+                    <strong>9.</strong> عزم الازدواج (Torque) على ملف يحمل تياراً في مجال مغناطيسي يُحسب من العلاقة:<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q9" value="a" class="ml-2"> أ) τ = NIAB sin(θ)</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q9" value="b" class="ml-2"> ب) τ = BIL sin(θ)</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q9" value="c" class="ml-2"> ج) τ = qvB sin(θ)</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q9" value="d" class="ml-2"> د) τ = μ₀nI</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: أ) τ = NIAB sin(θ)</div>
+                </li>
+                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-10">
+                    <strong>10.</strong> ملف عدد لفاته 100 لفة، مساحته 0.02 m²، يحمل تيار 3 A، موضوع في مجال مغناطيسي 0.5 T بزاوية 90°. عزم الازدواج يساوي:<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q10" value="a" class="ml-2"> أ) 3 N·m</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q10" value="b" class="ml-2"> ب) 30 N·m</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q10" value="c" class="ml-2"> ج) 0.3 N·m</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q10" value="d" class="ml-2"> د) 300 N·m</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: أ) τ = 100 × 3 × 0.02 × 0.5 = 3 N·m</div>
+                </li>
+                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-11">
+                    <strong>11.</strong> في قاعدة اليد اليمنى للقوة (فلمنج)، ماذا يمثل الإبهام؟<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q11" value="a" class="ml-2"> أ) اتجاه المجال المغناطيسي (B)</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q11" value="b" class="ml-2"> ب) اتجاه التيار الكهربي (I)</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q11" value="c" class="ml-2"> ج) اتجاه القوة المغناطيسية (F)</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q11" value="d" class="ml-2"> د) اتجاه حركة الشحنة</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ج) الإبهام = اتجاه القوة (F)، السبابة = المجال (B)، الوسطى = التيار (I)</div>
+                </li>
+                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-12">
+                    <strong>12.</strong> متى يكون عزم الازدواج على ملف في مجال مغناطيسي في أقصى قيمة له؟<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q12" value="a" class="ml-2"> أ) عندما يكون مستوى الملف موازياً للمجال (θ = 0°)</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q12" value="b" class="ml-2"> ب) عندما يكون مستوى الملف عمودياً على المجال (θ = 90°)</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q12" value="c" class="ml-2"> ج) عندما يكون التيار صفراً</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q12" value="d" class="ml-2"> د) عندما يكون عدد اللفات صفراً</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) لأن sin(90°) = 1، فيكون العزم في أقصى قيمة</div>
+                </li>
+            </ol>
+        </section>
+
+        <!-- Section 4: Electric Motor -->
+        <section class="bg-white p-6 rounded-xl shadow-lg">
+            <h2 class="text-xl font-bold mb-4 text-teal-700">🔹 الجزء الرابع: المحرك الكهربي ومكوناته</h2>
+            <ol id="section4-list" class="space-y-4 text-sm">
+                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-13">
+                    <strong>13.</strong> المحول الرئيسي للطاقة في المحرك الكهربي هو:<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q13" value="a" class="ml-2"> أ) من طاقة كهربية إلى طاقة حرارية</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q13" value="b" class="ml-2"> ب) من طاقة كهربية إلى طاقة ميكانيكية (حركة)</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q13" value="c" class="ml-2"> ج) من طاقة ميكانيكية إلى طاقة كهربية</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q13" value="d" class="ml-2"> د) من طاقة ضوئية إلى طاقة كهربية</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) يحول الطاقة الكهربية إلى طاقة ميكانيكية</div>
+                </li>
+                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-14">
+                    <strong>14.</strong> ما وظيفة المبدل (Commutator) في المحرك الكهربي؟<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q14" value="a" class="ml-2"> أ) يولد المجال المغناطيسي</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q14" value="b" class="ml-2"> ب) يعكس اتجاه التيار كل نصف دورة لضمان استمرار الدوران</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q14" value="c" class="ml-2"> ج) يقيس شدة التيار</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q14" value="d" class="ml-2"> د) يخزن الطاقة الكهربية</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) يعكس التيار كل نصف دورة ليبقى عزم الدوران في نفس الاتجاه</div>
+                </li>
+                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-15">
+                    <strong>15.</strong> أي مما يلي ليس من مكونات المحرك الكهربي الأساسية؟<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q15" value="a" class="ml-2"> أ) الملف (Armature)</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q15" value="b" class="ml-2"> ب) المبدل (Commutator)</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q15" value="c" class="ml-2"> ج) المكثف (Capacitor)</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q15" value="d" class="ml-2"> د) الفرشات (Brushes)</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ج) المكثف ليس من مكونات المحرك، بل المكونات: الملف، المغناطيس، المبدل، الفرشات</div>
+                </li>
+                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-16">
+                    <strong>16.</strong> تعتمد قوة المحرك الكهربي (عزم الدوران) على:<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q16" value="a" class="ml-2"> أ) عدد لفات الملف وشدة التيار فقط</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q16" value="b" class="ml-2"> ب) شدة المجال المغناطيسي ومساحة الملف فقط</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q16" value="c" class="ml-2"> ج) جميع العوامل: عدد اللفات، التيار، المجال، المساحة، والزاوية</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q16" value="d" class="ml-2"> د) طول السلك فقط</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ج) τ = NIAB sin(θ) يعتمد على جميع هذه العوامل</div>
+                </li>
+            </ol>
+        </section>
+
+        <!-- Section 5: Applications -->
+        <section class="bg-white p-6 rounded-xl shadow-lg">
+            <h2 class="text-xl font-bold mb-4 text-teal-700">🔹 الجزء الخامس: تطبيقات المجال المغناطيسي</h2>
+            <ol id="section5-list" class="space-y-4 text-sm">
+                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-17">
+                    <strong>17.</strong> أي مما يلي ليس من تطبيقات المجال المغناطيسي؟<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q17" value="a" class="ml-2"> أ) المحركات الكهربية</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q17" value="b" class="ml-2"> ب) أجهزة التصوير بالرنين المغناطيسي (MRI)</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q17" value="c" class="ml-2"> ج) المصابيح المتوهجة</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q17" value="d" class="ml-2"> د) قطارات الرفع المغناطيسي (Maglev)</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ج) المصابيح المتوهجة تعتمد على المقاومة الكهربية وليس المجال المغناطيسي</div>
+                </li>
+                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-18">
+                    <strong>18.</strong> ما الذي يميز قطارات Maglev (الرفع المغناطيسي)؟<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q18" value="a" class="ml-2"> أ) تسير على قضبان حديدية عادية</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q18" value="b" class="ml-2"> ب) تطفو فوق المسار باستخدام القوى المغناطيسية مما يلغي الاحتكاك</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q18" value="c" class="ml-2"> ج) تستخدم محركات ديزل</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q18" value="d" class="ml-2"> د) تسير بسرعة بطيئة جداً</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) تطفو باستخدام المجالات المغناطيسية، مما يلغي الاحتكاك ويسمح بسرعات عالية</div>
+                </li>
+                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-19">
+                    <strong>19.</strong> ما هو مبدأ عمل مسرّع الجسيمات الكبير (LHC)؟<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q19" value="a" class="ml-2"> أ) استخدام الجاذبية لتسريع الجسيمات</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q19" value="b" class="ml-2"> ب) استخدام المجالات الكهربية والمغناطيسية لتسريع وتوجيه الجسيمات المشحونة</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q19" value="c" class="ml-2"> ج) استخدام الحرارة لتسريع الجسيمات</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q19" value="d" class="ml-2"> د) استخدام الضوء لتسريع الجسيمات</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) يستخدم مجالات كهربية للتسريع ومجالات مغناطيسية قوية للتوجيه</div>
+                </li>
+                <li class="border-r-4 border-teal-500 pr-4 py-2" id="q-20">
+                    <strong>20.</strong> مكبرات الصوت (Speakers) تعمل بناءً على مبدأ:<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q20" value="a" class="ml-2"> أ) تحويل الطاقة الضوئية إلى صوت</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q20" value="b" class="ml-2"> ب) تأثير المجال المغناطيسي على ملف يحمل تياراً متغيراً لإنتاج اهتزازات صوتية</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q20" value="c" class="ml-2"> ج) ظاهرة الحث الكهرومغناطيسي فقط</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q20" value="d" class="ml-2"> د) تحويل الطاقة الحرارية إلى صوت</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) يتفاعل التيار المتغير في الملف مع مغناطيس دائم فيهتز الملف ويولد الصوت</div>
+                </li>
+            </ol>
+        </section>
+
+        <!-- Submit Button -->
+        <div class="text-center no-print pb-8">
+            <button onclick="gradeExam()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-lg px-10 py-4 rounded-xl font-bold shadow-xl transition transform hover:scale-105 cursor-pointer">
+                📝 تسليم وتصحيح الامتحان
+            </button>
+        </div>
+    </main>
+
+    <!-- Results Panel -->
+    <div id="results-panel" class="max-w-4xl mx-auto mt-8 bg-white p-8 rounded-2xl shadow-2xl border-t-4 border-emerald-500 hidden no-print">
+        <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">📊 نتائج الامتحان</h2>
+        <div class="grid md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-blue-50 p-4 rounded-xl text-center"><p>اسم الطالب</p><p id="res-name" class="font-bold text-xl text-teal-700">-</p></div>
+            <div class="bg-purple-50 p-4 rounded-xl text-center"><p>التاريخ</p><p id="res-date" class="font-bold text-xl text-purple-700">-</p></div>
+            <div class="bg-emerald-50 p-4 rounded-xl text-center"><p>المجموع</p><p id="res-total" class="font-bold text-3xl text-emerald-600">0 / 100</p></div>
+        </div>
+
+        <!-- Success Rate Badge -->
+        <div class="text-center mb-6">
+            <span id="success-badge" class="success-badge grade-excellent">ممتاز - 100%</span>
+            <p id="success-percent" class="text-4xl font-bold text-emerald-600 mt-2">100%</p>
+            <p class="text-sm text-gray-500">نسبة النجاح</p>
+        </div>
+
+        <!-- Performance Breakdown -->
+        <div class="bg-gray-50 p-6 rounded-xl mb-6">
+            <h3 class="font-bold text-lg mb-4 text-gray-800">📈 تفصيل الأداء حسب القسم:</h3>
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-700">قوة لورنتز والشحنة المتحركة</span>
+                    <span id="sec1-score" class="font-bold text-teal-600">0/4</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-700">القوة على سلك يحمل تياراً</span>
+                    <span id="sec2-score" class="font-bold text-teal-600">0/4</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-700">عزم الازدواج وقاعدة اليد اليمنى</span>
+                    <span id="sec3-score" class="font-bold text-teal-600">0/4</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-700">المحرك الكهربي ومكوناته</span>
+                    <span id="sec4-score" class="font-bold text-teal-600">0/4</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-700">تطبيقات المجال المغناطيسي</span>
+                    <span id="sec5-score" class="font-bold text-teal-600">0/4</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Email Send Button -->
+        <div class="text-center mb-6">
+            <button id="sendEmailBtn" onclick="sendResultsToEmail()" class="bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white text-lg px-8 py-3 rounded-xl font-bold shadow-xl transition transform hover:scale-105 cursor-pointer">
+                📧 إرسال النتائج للمعلم
+            </button>
+            <p id="emailStatus" class="text-sm mt-2 text-center font-medium"></p>
+        </div>
+
+        <div class="flex gap-3 justify-center">
+            <button onclick="window.print()" class="bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold">🖨️ طباعة النتائج</button>
+        </div>
+    </div>
+
+    <footer class="max-w-4xl mx-auto mt-10 mb-8 text-center text-gray-500 text-sm no-print">
+        © الفيزياء للصف الثاني عشر عام | تطبيقات المجال المغناطيسي | Mr. Mohammed Hesham
+    </footer>
+
+    <script>
+        // EmailJS Configuration
+        const PUBLIC_KEY = "Rb3Lq8tXaFmc5YHUH";
+        const SERVICE_ID = "service_w15m64i";
+        const TEMPLATE_ID = "template_5b0u2tq";
+        const TARGET_EMAIL = "mohammedhesham872@gmail.com";
+
+        (function(){ emailjs.init(PUBLIC_KEY); })();
+
+        // Timer
+        let timeRemaining = 3600;
         let timerInterval;
 
-        // ==================== RENDER QUESTIONS ====================
-        function renderQuestions() {
-            const container = document.getElementById('questionsContainer');
-            let html = '';
-            
-            questions.forEach((q, index) => {
-                const qNumber = index + 1;
-                const bgColor = index % 3 === 0 ? 'from-teal-50 to-cyan-50 border-teal-500' : 
-                               index % 3 === 1 ? 'from-cyan-50 to-sky-50 border-cyan-500' : 
-                               'from-sky-50 to-blue-50 border-sky-500';
-                
-                html += `
-                    <div class="bg-gradient-to-br ${bgColor} rounded-2xl p-6 shadow-lg border-r-4 fade-in" id="q${q.id}">
-                        <div class="flex items-start justify-between mb-4 flex-wrap gap-2">
-                            <h3 class="font-bold text-lg text-gray-800 flex items-center gap-2">
-                                <span class="bg-white text-teal-600 rounded-full w-10 h-10 flex items-center justify-center font-bold shadow">${qNumber}</span>
-                                السؤال ${qNumber}
-                            </h3>
-                            <span class="bg-white px-3 py-1 rounded-full text-sm font-semibold text-cyan-600 shadow">${q.points} ${q.points > 1 ? 'درجات' : 'درجة'}</span>
-                        </div>
-                        <p class="font-semibold text-gray-800 mb-4 text-lg">${q.question}</p>
-                        
-                        ${q.type === 'mcq' ? renderMCQ(q) : renderCalculation(q)}
-                        
-                        <div id="explanation${q.id}" class="hidden mt-4 bg-white rounded-xl p-4 border-2 border-green-400">
-                            <div class="flex items-start gap-2">
-                                <span class="text-2xl">💡</span>
-                                <div>
-                                    <p class="font-bold text-green-700 mb-1">الإجابة الصحيحة:</p>
-                                    <p class="text-gray-700">${q.explanation}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            container.innerHTML = html;
-        }
-
-        function renderMCQ(q) {
-            const letters = ['أ', 'ب', 'ج', 'د'];
-            return `
-                <div class="space-y-3">
-                    ${q.options.map((opt, i) => `
-                        <label class="flex items-center gap-3 bg-white rounded-xl p-4 cursor-pointer hover:shadow-lg transition border-2 border-transparent" id="opt${q.id}_${i}">
-                            <input type="radio" name="q${q.id}" value="${i}" onchange="selectAnswer(${q.id}, ${i})" class="w-5 h-5 text-teal-600">
-                            <span class="bg-teal-100 text-teal-700 rounded-full w-8 h-8 flex items-center justify-center font-bold">${letters[i]}</span>
-                            <span class="flex-1 text-gray-800">${opt}</span>
-                        </label>
-                    `).join('')}
-                </div>
-            `;
-        }
-
-        function renderCalculation(q) {
-            return `
-                <div class="bg-white rounded-xl p-4">
-                    <label class="block text-gray-700 mb-2 font-semibold">الإجابة:</label>
-                    <div class="flex items-center gap-3">
-                        <input type="number" step="any" id="calc${q.id}" oninput="selectCalcAnswer(${q.id}, this.value)" 
-                            class="flex-1 border-2 border-gray-300 rounded-lg px-4 py-3 focus:border-teal-500 focus:outline-none text-lg" 
-                            placeholder="اكتب القيمة الرقمية">
-                        <span class="bg-teal-100 text-teal-700 px-4 py-3 rounded-lg font-bold">${q.unit}</span>
-                    </div>
-                </div>
-            `;
-        }
-
-        // ==================== ANSWER HANDLING ====================
-        function selectAnswer(qId, optIndex) {
-            userAnswers[qId] = optIndex;
-            updateProgress();
-            
-            const options = document.querySelectorAll(`[id^="opt${qId}_"]`);
-            options.forEach((opt, i) => {
-                if (i === optIndex) {
-                    opt.classList.add('option-selected');
-                } else {
-                    opt.classList.remove('option-selected');
-                }
-            });
-        }
-
-        function selectCalcAnswer(qId, value) {
-            userAnswers[qId] = value;
-            updateProgress();
-        }
-
-        function updateProgress() {
-            const answered = Object.keys(userAnswers).length;
-            const total = questions.length;
-            const percentage = (answered / total) * 100;
-            
-            document.getElementById('progress').textContent = `${answered}/${total}`;
-            document.getElementById('progressBar').style.width = `${percentage}%`;
-        }
-
-        // ==================== TIMER ====================
         function startTimer() {
+            document.getElementById('timer-container').style.display = 'block';
             timerInterval = setInterval(() => {
-                timeLeft--;
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
+                timeRemaining--;
+                const minutes = Math.floor(timeRemaining / 60);
+                const seconds = timeRemaining % 60;
                 const timerEl = document.getElementById('timer');
-                timerEl.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                timerEl.textContent = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
                 
-                if (timeLeft <= 300) {
-                    timerEl.classList.add('timer-warning');
-                }
-                
-                if (timeLeft <= 0) {
+                if (timeRemaining <= 300) timerEl.classList.add('timer-warning');
+                if (timeRemaining <= 0) {
                     clearInterval(timerInterval);
-                    submitExam();
+                    alert("انتهى الوقت! سيتم تسليم الامتحان تلقائياً.");
+                    gradeExam();
                 }
             }, 1000);
         }
 
-        // ==================== SUBMIT & GRADE ====================
-        function submitExam() {
-            if (!confirm('هل أنت متأكد من تسليم الامتحان؟')) return;
-            
-            clearInterval(timerInterval);
-            
-            let totalScore = 0;
-            let correctCount = 0;
-            let resultsHTML = '';
-            
-            questions.forEach((q, index) => {
-                const userAns = userAnswers[q.id];
-                let isCorrect = false;
-                let userAnsText = '';
-                let correctAnsText = '';
-                
-                if (q.type === 'mcq') {
-                    isCorrect = userAns === q.correct;
-                    userAnsText = userAns !== undefined ? q.options[userAns] : 'لم يتم الإجابة';
-                    correctAnsText = q.options[q.correct];
-                    
-                    if (userAns !== undefined) {
-                        const userOpt = document.getElementById(`opt${q.id}_${userAns}`);
-                        if (isCorrect) {
-                            userOpt.classList.add('option-correct');
-                        } else {
-                            userOpt.classList.add('option-wrong');
-                        }
-                    }
-                    const correctOpt = document.getElementById(`opt${q.id}_${q.correct}`);
-                    if (!isCorrect && userAns !== undefined) {
-                        correctOpt.classList.add('option-correct');
-                    }
-                } else {
-                    if (userAns !== undefined && userAns !== '') {
-                        const numAns = parseFloat(userAns);
-                        const numCorrect = parseFloat(q.answer);
-                        isCorrect = Math.abs(numAns - numCorrect) < 0.0001;
-                        userAnsText = userAns + ' ' + q.unit;
-                    } else {
-                        userAnsText = 'لم يتم الإجابة';
-                    }
-                    correctAnsText = q.answer + ' ' + q.unit;
-                }
-                
-                if (isCorrect) {
-                    totalScore += q.points;
-                    correctCount++;
-                }
-                
-                document.getElementById(`explanation${q.id}`).classList.remove('hidden');
-                
-                resultsHTML += `
-                    <div class="flex items-center gap-3 p-3 rounded-lg ${isCorrect ? 'bg-green-50' : 'bg-red-50'}">
-                        <span class="text-2xl">${isCorrect ? '✅' : '❌'}</span>
-                        <span class="flex-1">السؤال ${index + 1}</span>
-                        <span class="font-semibold ${isCorrect ? 'text-green-700' : 'text-red-700'}">${isCorrect ? q.points : 0}/${q.points}</span>
-                    </div>
-                `;
-            });
-            
-            const totalPoints = questions.reduce((sum, q) => sum + q.points, 0);
-            const percentage = ((totalScore / totalPoints) * 100).toFixed(1);
-            const gradeColor = percentage >= 90 ? 'green' : percentage >= 75 ? 'blue' : percentage >= 60 ? 'yellow' : 'red';
-            const gradeMessage = percentage >= 90 ? 'ممتاز! 🌟' : percentage >= 75 ? 'جيد جداً! 👏' : percentage >= 60 ? 'جيد 👍' : 'يحتاج مراجعة 📚';
-            
-            const studentName = document.getElementById('studentName').value || 'طالب';
-            
-            const resultsContent = `
-                <div class="text-center mb-6">
-                    <div class="text-6xl mb-3">${percentage >= 60 ? '🎉' : '📚'}</div>
-                    <h2 class="text-3xl font-bold text-gray-800 mb-2">نتيجة الامتحان</h2>
-                    <p class="text-gray-600">${studentName}</p>
-                </div>
-                
-                <div class="bg-gradient-to-br from-${gradeColor}-100 to-${gradeColor}-200 rounded-2xl p-8 mb-6 text-center">
-                    <div class="text-7xl font-bold text-${gradeColor}-700 mb-2">${percentage}%</div>
-                    <div class="text-2xl font-bold text-${gradeColor}-800 mb-2">${gradeMessage}</div>
-                    <div class="text-xl text-gray-700">
-                        <span class="font-bold">${totalScore}</span> / <span>${totalPoints}</span> درجة
-                    </div>
-                    <div class="text-gray-600 mt-2">
-                        ${correctCount} إجابة صحيحة من ${questions.length}
-                    </div>
-                </div>
-                
-                <h3 class="font-bold text-xl mb-4 text-gray-800">📊 تفاصيل الإجابات:</h3>
-                <div class="space-y-2 mb-6">
-                    ${resultsHTML}
-                </div>
-                
-                <div class="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
-                    <h4 class="font-bold text-blue-800 mb-2">💡 نصيحة:</h4>
-                    <p class="text-gray-700">${percentage >= 75 ? 'أداء رائع! راجع الأسئلة التي أخطأت فيها لتعزيز فهمك.' : 'راجع الدرس جيداً وحاول مرة أخرى. الممارسة تصنع المعجزات!'}</p>
-                </div>
-            `;
-            
-            document.getElementById('resultsContent').innerHTML = resultsContent;
-            document.getElementById('resultsSection').classList.remove('hidden');
-            document.getElementById('submitBtn').disabled = true;
-            document.getElementById('submitBtn').classList.add('opacity-50', 'cursor-not-allowed');
-            document.getElementById('submitBtn').innerHTML = '✅ تم تسليم الامتحان';
-            
-            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+        function toggleAnswers() {
+            document.querySelectorAll('.answer-box').forEach(el => el.classList.toggle('hidden'));
         }
 
-        // ==================== INITIALIZE ====================
-        renderQuestions();
-        startTimer();
+        function gradeExam() {
+            let correctCount = 0;
+            const correctAnswers = [
+                'b','b','c','b',  // Q1-4
+                'a','a','a','c',  // Q5-8
+                'a','a','c','b',  // Q9-12
+                'b','b','c','c',  // Q13-16
+                'c','b','b','b'   // Q17-20
+            ];
+
+            let sec1 = 0, sec2 = 0, sec3 = 0, sec4 = 0, sec5 = 0;
+
+            for(let i=1; i<=20; i++){
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                const li = document.getElementById(`q-${i}`);
+                const isCorrect = selected && selected.value === correctAnswers[i-1];
+                
+                if (isCorrect) {
+                    correctCount++;
+                    li.classList.add('correct');
+                    li.classList.remove('incorrect');
+                    
+                    if (i <= 4) sec1++;
+                    else if (i <= 8) sec2++;
+                    else if (i <= 12) sec3++;
+                    else if (i <= 16) sec4++;
+                    else sec5++;
+                } else {
+                    li.classList.add('incorrect');
+                    li.classList.remove('correct');
+                }
+            }
+
+            const score = (correctCount / 20) * 100;
+            const successRate = Math.round(score);
+            
+            document.getElementById('res-total').textContent = `${Math.round(score)} / 100`;
+            document.getElementById('res-name').textContent = document.getElementById('studentName').value || 'طالب';
+            document.getElementById('res-date').textContent = new Date().toLocaleDateString('ar-AE');
+            
+            document.getElementById('sec1-score').textContent = `${sec1}/4`;
+            document.getElementById('sec2-score').textContent = `${sec2}/4`;
+            document.getElementById('sec3-score').textContent = `${sec3}/4`;
+            document.getElementById('sec4-score').textContent = `${sec4}/4`;
+            document.getElementById('sec5-score').textContent = `${sec5}/4`;
+            
+            const badge = document.getElementById('success-badge');
+            const percent = document.getElementById('success-percent');
+            percent.textContent = `${successRate}%`;
+            
+            if(successRate >= 90) {
+                badge.textContent = 'ممتاز';
+                badge.className = 'success-badge grade-excellent';
+            } else if(successRate >= 75) {
+                badge.textContent = 'جيد جداً';
+                badge.className = 'success-badge grade-good';
+            } else if(successRate >= 50) {
+                badge.textContent = 'جيد';
+                badge.className = 'success-badge grade-pass';
+            } else {
+                badge.textContent = 'يحتاج تحسين';
+                badge.className = 'success-badge grade-fail';
+            }
+            
+            document.getElementById('results-panel').classList.remove('hidden');
+            document.getElementById('results-panel').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('sendEmailBtn').classList.remove('hidden');
+        }
+
+        function sendResultsToEmail() {
+            const btn = document.getElementById('sendEmailBtn');
+            const status = document.getElementById('emailStatus');
+            btn.disabled = true;
+            btn.textContent = '⏳ جاري الإرسال...';
+
+            const name = document.getElementById('studentName').value || 'N/A';
+            const studentClass = document.getElementById('studentClass').value || 'غير محدد';
+            const date = document.querySelector('input[type="text"]').value || new Date().toLocaleDateString('ar-AE');
+            const score = document.getElementById('res-total').textContent;
+            const successRate = document.getElementById('success-percent').textContent;
+            const sec1 = document.getElementById('sec1-score').textContent;
+            const sec2 = document.getElementById('sec2-score').textContent;
+            const sec3 = document.getElementById('sec3-score').textContent;
+            const sec4 = document.getElementById('sec4-score').textContent;
+            const sec5 = document.getElementById('sec5-score').textContent;
+
+            let answersHTML = `<div dir="rtl" style="font-family: 'Cairo', sans-serif;">
+                <h3 style="color:#0d9488;">📊 تفصيل الأداء - امتحان تطبيقات المجال المغناطيسي:</h3>
+                <p><strong>الطالب:</strong> ${name} | <strong>الشعبة:</strong> ${studentClass}</p>
+                <ul>
+                    <li>قوة لورنتز والشحنة المتحركة: ${sec1}</li>
+                    <li>القوة على سلك يحمل تياراً: ${sec2}</li>
+                    <li>عزم الازدواج وقاعدة اليد اليمنى: ${sec3}</li>
+                    <li>المحرك الكهربي ومكوناته: ${sec4}</li>
+                    <li>تطبيقات المجال المغناطيسي: ${sec5}</li>
+                </ul>
+                <table style="border:1px solid #e5e7eb; border-collapse:collapse; width:100%; font-size:14px; direction: rtl;">
+                <tr style="background:#0d9488; color:white;"><th style="border:1px solid #e5e7eb; padding:8px;">السؤال</th><th style="border:1px solid #e5e7eb; padding:8px;">الإجابة المختارة</th><th style="border:1px solid #e5e7eb; padding:8px;">الحالة</th></tr>`;
+            
+            const correctAnswers = ['b','b','c','b','a','a','a','c','a','a','c','b','b','b','c','c','c','b','b','b'];
+            
+            for(let i=1; i<=20; i++) {
+                const sel = document.querySelector(`input[name="q${i}"]:checked`);
+                const isCorrect = sel && sel.value === correctAnswers[i-1];
+                answersHTML += `<tr><td style="border:1px solid #e5e7eb; padding:6px;">${i}</td><td style="border:1px solid #e5e7eb; padding:6px;">${sel ? sel.value : '-'}</td><td style="border:1px solid #e5e7eb; padding:6px; color:${isCorrect ? 'green' : 'red'}">${isCorrect ? '✅ صحيح' : '❌ خطأ'}</td></tr>`;
+            }
+            answersHTML += '</table></div>';
+
+            const templateParams = {
+                to_email: TARGET_EMAIL,
+                student_name: name,
+                exam_date: date,
+                total_score: score,
+                success_rate: successRate,
+                answers_table: answersHTML
+            };
+
+            emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams)
+                .then(() => {
+                    status.textContent = '✅ تم الإرسال بنجاح! تحقق من Gmail.';
+                    status.style.color = '#059669';
+                    btn.textContent = '✓ تم الإرسال';
+                })
+                .catch(err => {
+                    status.textContent = '❌ فشل الإرسال. تحقق من الإعدادات.';
+                    status.style.color = '#dc2626';
+                    btn.disabled = false;
+                    btn.textContent = '📧 إعادة المحاولة';
+                    console.error('EmailJS Error:', err);
+                });
+        }
+
+        window.addEventListener('DOMContentLoaded', startTimer);
     </script>
 </body>
 </html>
